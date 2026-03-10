@@ -182,8 +182,10 @@ THM{321452667098}
 root@ip-10-48-117-52:~# 
 ```
 
-### Q8: Browsing to `http://10.48.184.244:8080` displays a small challenge that will give you a flag once you solve it. What is the flag?
+### Q8: Browsing to `TARGET_IP:8080` displays a small challenge that will give you a flag once you solve it. What is the flag?
 **Solution:**
+
+![screetshot of http://TARGET_IP:8080](/question8.png)
 
 You need to wirte a nmap command such that you can perform a network scan while being undetected by the IDS, or keep the detection percentage as low as possible.
 ```
