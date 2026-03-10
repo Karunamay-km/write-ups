@@ -79,7 +79,7 @@ PORT   STATE SERVICE
 |   Content-Length: 226
 |   Connection: close
 |   Date: Tue, 10 Mar 2026 07:30:35 GMT
-|   Server: lighttpd THM{web_server_25352}
+|   Server: lighttpd THM{web_********2}
 |   
 |_  (Request type: HEAD)
 
@@ -97,7 +97,7 @@ telnet TARGET_IP 22
 Trying 10.48.184.244...
 Connected to 10.48.184.244.
 Escape character is '^]'.
-SSH-2.0-OpenSSH_8.2p1 THM{946219583339}
+SSH-2.0-OpenSSH_8.2p1 THM{9*********9}
 ```
 It gives you the SSH version and the hidden flag.
 
@@ -139,12 +139,12 @@ Hydra v9.0 (c) 2019 by van Hauser/THC - Please do not use in military or secret 
 Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2026-03-10 07:54:13
 [DATA] max 16 tasks per 1 server, overall 16 tasks, 14344398 login tries (l:1/p:14344398), ~896525 tries per task
 [DATA] attacking ftp://10.48.184.244:10021/
-[10021][ftp] host: 10.48.184.244   login: quinn   password: andrea
+[10021][ftp] host: 10.48.184.244   login: quinn   password: a****a
 1 of 1 target successfully completed, 1 valid password found
 Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2026-03-10 07:54:33
 
 ```
-We get the password `andrea` for the username `quinn`. Use this credential to connect the FTP server
+We get the password `a****a` for the username `quinn`. Use this credential to connect the FTP server
 ```
 ftp 10.48.184.244 10021
 ```
@@ -178,7 +178,7 @@ burp.json   Downloads     Pictures  Scripts            Tools
 CTFBuilder  ftp_flag.txt  Postman   snap
 Desktop     Instructions  Rooms     thinclient_drives
 root@ip-10-48-117-52:~# cat ftp_flag.txt 
-THM{321452667098}
+THM{32********98}
 root@ip-10-48-117-52:~# 
 ```
 
