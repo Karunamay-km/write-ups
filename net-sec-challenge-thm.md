@@ -5,7 +5,7 @@ Net Sec Challenge by TryHackMe [https://tryhackme.com/room/netsecchallenge]
 All the questions can be solved by using `nmap`, `telnet`, and `hydra`.
 
 ### Q1: What is the highest port number being open less than 10,000?
-**Answer:** 8080
+**Solution:**
 ```
 nmap TARGET_IP -p 1-10000
 ```
@@ -32,7 +32,7 @@ You can also use flags such as `-n` for no reverse dns or `-Pn` to scan ports on
 
 ### Q2: There is an open port outside the common 1000 ports; it is above 10,000. What is it?
 
-**Answer:** 10021
+**Solution:**
 
 By default, `nmap` scan top 1000 ports. Since the question asks for a port number that is beyond 10,000, we need to pass a port range using the `-p` flag.
 
@@ -51,12 +51,12 @@ PORT      STATE SERVICE
 This command will scan all the ports from 10,000 to 65,535.
 
 ### Q3: How many TCP ports are open?
-**Answer**: 6
+**Solution**:
 
 Count the TCP open ports to get the answer.
 
 ### Q4: What is the flag hidden in the HTTP server header?
-**Answer**: THM{web_server_25352}
+**Solution**:
 
 First, we need to check on which port the HTTP server is running. From the previous result, it is port 80.
 
@@ -85,7 +85,7 @@ PORT   STATE SERVICE
 
 ```
 ### Q5: What is the flag hidden in the SSH server header?
-**Answer:** THM{946219583339}
+**Solution:**
 
 The SSH server is running on port 22.
 
@@ -102,7 +102,7 @@ SSH-2.0-OpenSSH_8.2p1 THM{946219583339}
 It gives you the SSH version and the hidden flag.
 
 ### Q6: We have an FTP server listening on a nonstandard port. What is the version of the FTP server?
-**Answer:** vsftpd 3.0.5
+**Solution:**
 
 Since the FTP server is listening on a non-standard port, we need to pass a port range from 1-65535. To know the service version, we can use the flag `-sV`.
 
@@ -125,7 +125,7 @@ PORT      STATE SERVICE     VERSION
 ```
 
 ### Q7: We learned two usernames using social engineering: `eddie` and `quinn`. What is the flag hidden in one of these two account files and accessible via FTP?
-**Answer:** THM{321452667098}
+**Solution:**
 
 We have the usernames, but not the password, which we can use to connect to the FTP server.
 
@@ -183,7 +183,7 @@ root@ip-10-48-117-52:~#
 ```
 
 ### Q8: Browsing to `http://10.48.184.244:8080` displays a small challenge that will give you a flag once you solve it. What is the flag?
-**Answer:** THM{f7443f99}
+**Solution:**
 
 You need to wirte a nmap command such that you can perform a network scan while being undetected by the IDS, or keep the detection percentage as low as possible.
 ```
