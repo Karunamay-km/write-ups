@@ -1,8 +1,8 @@
 
 
-[Hammer challenge](https://tryhackme.com/room/hammer) by TryHackMe
+## [Hammer challenge](https://tryhackme.com/room/hammer) by TryHackMe
 
-## This write-up contains the approach to solve the Hammer challenge by tryhackme.com
+## This write-up contains the approach to solve the Hammer challenge by [Tryhackme](https://tryhackme.com)
 
 ### Questions to be answered:
   - What is the flag value after logging in to the dashboard?
