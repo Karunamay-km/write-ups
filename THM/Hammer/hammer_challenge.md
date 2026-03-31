@@ -49,6 +49,7 @@ Now, in your browser, you can visit the website with the URL `http://[IP]:1337`
 
 You need to log in. But surely you don't have the email and password. So let's start the enumeration by looking at the web page's source code.
 
+![Login page source code](./login_page_source_code.png)
 
 There you have your first clue. With that, my next step would be to do directory enumeration to see what directories the website has.
 I am going to use `gobuster` with a wordlist available in this path `/usr/share/wordlists/dirbuster/directory-list-2.3-small.txt`. But the directory 
