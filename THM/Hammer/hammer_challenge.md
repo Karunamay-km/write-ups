@@ -104,7 +104,7 @@ Let's visit the directory in the browser.
 
 There is an error log file. Let's see what we can find inside it.
 
-![hmr_log error](./hmr_log_error_.png)
+![hmr_log error](./hmr_log_error.png)
 
 You can see a user with email `tester@hammer.thm`. We can use this email to log in to the website. 
 
