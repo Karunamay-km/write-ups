@@ -157,13 +157,13 @@ The syntax is like this
 X-Forwarded-For: <client>, <proxy>, …, <proxyN>
 ```
 
-So on each request, if we change the `X-Forwarded-For` header, the server will think that the request is coming from a different client, and our `Rate-Limit-Pending` value should be decreased.
+So on each request, if we change the `X-Forwarded-For` header, the server will think that the request is coming from a different client, and our `Rate-Limit-Pending` value should not be decreased.
 
 As you can see, the rate limit count stays fixed for different IP addresses.
 
 ![Code attempt ip 1](./code_attempt_IP_1.png)
 
-![Code attempt ip 2](./code_attempt_IP_2.png)
+![Code attempt ip 2](./Code_attempt_IP_2.png)
 
 
 ### Fast brute-force attack
@@ -384,17 +384,17 @@ Rate Limit: 9 | Cookie: <RequestsCookieJar[<Cookie PHPSESSID=nvtcul08kl2l7td30ne
 
 ```
 
-Even though it found multiple valid recovery codes, it doesn't really matter. Because when the script actually finds a valid recovery code, it already validates the code with the server and the PHPSESSID, and the session is updated.
+Even though it found multiple valid recovery codes, it doesn't really matter. Because when the script actually finds a valid recovery code, it already validates the code with the server and the `PHPSESSID`, and the session is updated.
 
-So what is important for us now is the PHPSESSID. In fact, if you just update the PHPSESSID in the cookie and put whatever code you want, and reload the page, you will successfully bypass the recovery code and promted to put in a new password.
+So what is important for us now is the `PHPSESSID`. In fact, if you just update the PHPSESSID in the cookie and put whatever code you want, and then reload the page, you will successfully bypass the recovery code and be prompted to enter a new password.
 
 After resetting the password, you can login into the dashboard page. The answer for Q1 shall be there.
 
 In the Enter Command input field, enter the `ls` command to list the serving directory. There is a file named `188ade1.key`. Download the file by navigating to `/188ade.key` path. Inside the file, there is a key `56************************7d7`
 
-Notice the role it is showing and also the behaviour of the page. The page is only shown for 20 seconds. After that, you will be automatically logged out.
-
 ![dashboard](./dashboard.png)
+
+Notice the role it is showing and also the behaviour of the page. The page is only shown for 20 seconds. After that, you will be automatically logged out.
 
 Opening the source code of the page, you will see a JWT token that is being used as an authentication token when sending the `ls` command to the execute_command.php endpoint.
 
@@ -402,7 +402,7 @@ Goto the [jwt.io](https://jwt.io) to decode the token
 
 ![decode jwt](./jwt.png)
 
-In the payload section, the role is `user`. Also, look at the `kid` key in the header section. The `kid` tells the server where to find the secret used to sign the token.
+In the payload section, the role is `user`. Also, look at the `kid` key in the header section. The `kid` tells the server where to find the secret that is used to sign the token.
 
 We can change the role to `admin` and use the token we downloaded earlier to sign the new token. And we will point to the `188ade1.key` file in the `kid` value.
 
@@ -498,7 +498,7 @@ def login():
             
             # Update the cookie with the new token
             cookies = requests.cookies.RequestsCookieJar()
-            cookies.set("token", new_token, domain="10.48.137.73", path="/")
+            cookies.set("token", new_token, domain=IP, path="/")
             session.cookies.update(cookies)
 
             command = {"command": "cat /home/ubuntu/flag.txt"}
